@@ -8,43 +8,40 @@ import (
 	"github.com/pkg/errors"
 )
 
-type JSONUtil struct {
-	readResult JSONReadResult
+type jsonUtil struct {
+	readResult ReadResult
 }
 
-func NewJSONReadUtil() ReadInterface {
-	return &JSONUtil{}
+func newJSONReadUtil() ReadInterface {
+	return &jsonUtil{}
 }
 
-func (u *JSONUtil) Read(filePath string) ReadInterface {
+func (u *jsonUtil) Read(filePath string) ReadResult {
 	fs, err := os.Open(filePath)
 	if err != nil {
-		u.readResult = JSONReadResult{
+		return ReadResult{
 			Error: err,
 		}
-		return u
 	}
 	defer fs.Close()
 
 	byteValue, err := ioutil.ReadAll(fs)
 	if err != nil {
-		u.readResult = JSONReadResult{
+		return ReadResult{
 			Error: err,
 		}
-		return u
 	}
-	u.readResult = JSONReadResult{
-		Detail: byteValue,
+	return ReadResult{
+		JSONDetail: byteValue,
 	}
-	return u
 }
 
-func (u *JSONUtil) Error() error {
+func (u *jsonUtil) Error() error {
 	return u.readResult.Error
 }
 
-func (u *JSONUtil) GetFileContent(result interface{}) error {
-	err := json.Unmarshal(u.readResult.Detail, result)
+func (u *jsonUtil) GetFileContent(result interface{}) error {
+	err := json.Unmarshal(u.readResult.JSONDetail, result)
 	if err != nil {
 		return errors.WithStack(err)
 	}

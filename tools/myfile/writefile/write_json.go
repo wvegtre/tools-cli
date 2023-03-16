@@ -5,34 +5,32 @@ import (
 	"os"
 )
 
-type JSONUtil struct {
+type jsonUtil struct {
 	writeResult WriteResult
 }
 
-func NewJSONUtil() WriteInterface {
-	return &JSONUtil{}
+func newJSONUtil() WriteInterface {
+	return &jsonUtil{}
 }
 
-func (u *JSONUtil) Write(filePath string, data []byte) WriteInterface {
+func (u *jsonUtil) Write(filePath string, data []byte) WriteResult {
 	fs, err := os.Create(filePath)
 	if err != nil {
-		u.writeResult = WriteResult{
+		return WriteResult{
 			Error: err,
 		}
-		return u
 	}
 	defer fs.Close()
 	encoder := json.NewEncoder(fs)
 	err = encoder.Encode(data)
 	if err != nil {
-		u.writeResult = WriteResult{
+		return WriteResult{
 			Error: err,
 		}
-		return u
 	}
-	return u
+	return WriteResult{}
 }
 
-func (u *JSONUtil) Error() error {
+func (u *jsonUtil) Error() error {
 	return u.writeResult.Error
 }

@@ -7,11 +7,10 @@ import (
 )
 
 type ReadInterface interface {
-	Read(filePath string) ReadInterface
-	Error() error
+	Read(filePath string) ReadResult
 }
 
-func Read(filePath string) ReadInterface {
+func Read(filePath string) ReadResult {
 	arr := strings.Split(filePath, ".")
 	var fileSuffix string
 	if len(arr) > 2 {
@@ -19,28 +18,22 @@ func Read(filePath string) ReadInterface {
 	}
 	switch fileSuffix {
 	case "csv":
-		return NewCSVReadUtil().Read(filePath)
+		return newCSVReadUtil().Read(filePath)
 	case "json":
-		return NewJSONReadUtil().Read(filePath)
+		return newJSONReadUtil().Read(filePath)
 	}
 	return newDefaultReadUtil().Read(filePath)
 }
 
 type defaultReadUtil struct {
-	readResult defaultReadResult
 }
 
 func newDefaultReadUtil() ReadInterface {
 	return &defaultReadUtil{}
 }
 
-func (u *defaultReadUtil) Read(filePath string) ReadInterface {
-	u.readResult = defaultReadResult{
+func (u *defaultReadUtil) Read(filePath string) ReadResult {
+	return ReadResult{
 		Error: errors.New("un-support file suffix, " + filePath),
 	}
-	return u
-}
-
-func (u *defaultReadUtil) Error() error {
-	return u.readResult.Error
 }

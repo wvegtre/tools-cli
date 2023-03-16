@@ -8,34 +8,22 @@ import (
 	"github.com/pkg/errors"
 )
 
-type CSVUtil struct {
-	readResult CSVReadResult
+type csvUtil struct{}
+
+func newCSVReadUtil() ReadInterface {
+	return &csvUtil{}
 }
 
-func NewCSVReadUtil() ReadInterface {
-	return &CSVUtil{}
-}
-
-func (u *CSVUtil) Read(filePath string) ReadInterface {
+func (u *csvUtil) Read(filePath string) ReadResult {
 	content, err := readCsv(filePath)
 	if err != nil {
-		u.readResult = CSVReadResult{
-			Error: errors.WithStack(err),
+		return ReadResult{
+			Error: err,
 		}
-		return u
 	}
-	u.readResult = CSVReadResult{
-		Detail: content,
+	return ReadResult{
+		CSVDetail: content,
 	}
-	return u
-}
-
-func (u *CSVUtil) Error() error {
-	return u.readResult.Error
-}
-
-func (u *CSVUtil) GetFileContent() *FileContentDetail {
-	return u.readResult.Detail
 }
 
 func readCsv(filePath string) (*FileContentDetail, error) {
