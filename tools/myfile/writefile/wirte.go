@@ -7,11 +7,10 @@ import (
 )
 
 type WriteInterface interface {
-	Write(filePath string, data []byte) WriteInterface
-	Error() error
+	Write(filePath string, data []byte) WriteResult
 }
 
-func Write(filePath string, data []byte) WriteInterface {
+func Write(filePath string, data []byte) WriteResult {
 	arr := strings.Split(filePath, ".")
 	var fileSuffix string
 	if len(arr) > 2 {
@@ -19,9 +18,9 @@ func Write(filePath string, data []byte) WriteInterface {
 	}
 	switch fileSuffix {
 	case "csv":
-		return NewCSVUtil().Write(filePath, data)
+		return newCSVUtil().Write(filePath, data)
 	case "json":
-		return NewJSONUtil().Write(filePath, data)
+		return newJSONUtil().Write(filePath, data)
 	}
 	return newDefaultReadUtil().Write(filePath, data)
 }
@@ -34,13 +33,8 @@ func newDefaultReadUtil() WriteInterface {
 	return &defaultUtil{}
 }
 
-func (u *defaultUtil) Write(filePath string, data []byte) WriteInterface {
-	u.writeResult = WriteResult{
+func (u *defaultUtil) Write(filePath string, data []byte) WriteResult {
+	return WriteResult{
 		Error: errors.New("un-support file suffix, " + filePath),
 	}
-	return u
-}
-
-func (u *defaultUtil) Error() error {
-	return u.writeResult.Error
 }

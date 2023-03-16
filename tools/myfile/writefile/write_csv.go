@@ -8,34 +8,32 @@ import (
 	"github.com/pkg/errors"
 )
 
-type CSVUtil struct {
+type csvUtil struct {
 	writeResult WriteResult
 }
 
-func NewCSVUtil() WriteInterface {
-	return &CSVUtil{}
+func newCSVUtil() WriteInterface {
+	return &csvUtil{}
 }
 
-func (u *CSVUtil) Write(filePath string, data []byte) WriteInterface {
+func (u *csvUtil) Write(filePath string, data []byte) WriteResult {
 	parameter := &CSVWriteParameter{}
 	err := json.Unmarshal(data, &parameter)
 	if err != nil {
-		u.writeResult = WriteResult{
+		return WriteResult{
 			Error: errors.WithStack(err),
 		}
-		return u
 	}
 	err = genCSVFile(filePath, parameter)
 	if err != nil {
-		u.writeResult = WriteResult{
+		return WriteResult{
 			Error: errors.WithStack(err),
 		}
-		return u
 	}
-	return u
+	return WriteResult{}
 }
 
-func (u *CSVUtil) Error() error {
+func (u *csvUtil) Error() error {
 	return u.writeResult.Error
 }
 
