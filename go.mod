@@ -1,4 +1,4 @@
-module cmd/main.go
+module github.com/wvegtre/tools-cli
 
 go 1.18
 
